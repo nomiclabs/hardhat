@@ -2,6 +2,7 @@ import path from "path";
 
 import { HardhatError } from "../internal/core/errors";
 import { ERRORS } from "../internal/core/errors-list";
+import { getPackageName } from "../internal/util/packageInfo";
 
 const NODE_MODULES = "node_modules";
 
@@ -167,6 +168,20 @@ export function normalizeSourceName(sourceName: string): string {
  */
 export function isAbsolutePathSourceName(sourceName: string): boolean {
   return path.isAbsolute(sourceName) || sourceName.startsWith("/");
+}
+
+/**
+ * This function returns true if the sourceName contains the current package's name
+ * as a substring
+ */
+export async function includesOwnPackageName(
+  sourceName: string
+): Promise<boolean> {
+  const packageName = await getPackageName(sourceName);
+  if (packageName !== "") {
+    return sourceName.startsWith(`${packageName}/`);
+  }
+  return false;
 }
 
 /**
