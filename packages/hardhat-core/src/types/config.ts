@@ -68,11 +68,17 @@ export interface HDAccountsUserConfig {
   path?: string;
 }
 
-export interface HardhatNetworkForkingUserConfig {
-  enabled?: boolean;
-  url: string;
-  blockNumber?: number;
-}
+export type HardhatNetworkForkingUserConfig =
+  | {
+      enabled?: boolean;
+      url: string;
+      blockNumber?: number;
+    }
+  | {
+      enabled?: boolean;
+      network: string;
+      blockNumber?: number;
+    };
 
 export type HttpNetworkAccountsUserConfig =
   | "remote"
@@ -139,6 +145,7 @@ export interface HardhatNetworkForkingConfig {
   enabled: boolean;
   url: string;
   blockNumber?: number;
+  network?: string;
 }
 
 export interface HttpNetworkConfig {
