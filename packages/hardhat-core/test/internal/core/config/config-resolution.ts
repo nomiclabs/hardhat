@@ -502,7 +502,6 @@ describe("Config resolution", () => {
           assert.deepEqual(config.networks.hardhat.mining, {
             auto: true,
             interval: 0,
-            orderedTxPool: false,
           });
         });
 
@@ -520,7 +519,6 @@ describe("Config resolution", () => {
           assert.deepEqual(config.networks.hardhat.mining, {
             auto: false,
             interval: 1000,
-            orderedTxPool: false,
           });
         });
 
@@ -538,25 +536,6 @@ describe("Config resolution", () => {
           assert.deepEqual(config.networks.hardhat.mining, {
             auto: false,
             interval: 0,
-            orderedTxPool: false,
-          });
-        });
-
-        it("should allow configuring orderedTxPool", function () {
-          const config = resolveConfig(__filename, {
-            networks: {
-              hardhat: {
-                mining: {
-                  orderedTxPool: true,
-                },
-              },
-            },
-          });
-
-          assert.deepEqual(config.networks.hardhat.mining, {
-            auto: true,
-            interval: 0,
-            orderedTxPool: true,
           });
         });
 
@@ -575,7 +554,6 @@ describe("Config resolution", () => {
           assert.deepEqual(config.networks.hardhat.mining, {
             auto: true,
             interval: 1000,
-            orderedTxPool: false,
           });
         });
 
@@ -593,7 +571,6 @@ describe("Config resolution", () => {
           assert.deepEqual(config.networks.hardhat.mining, {
             auto: false,
             interval: [1000, 5000],
-            orderedTxPool: false,
           });
         });
       });
@@ -639,6 +616,32 @@ describe("Config resolution", () => {
         });
       });
 
+      describe("TxPool config", function () {
+        it("should default use default txpool values ", function () {
+          const config = resolveConfig(__filename, {});
+
+          assert.deepEqual(config.networks.hardhat.txpool, {
+            fifo: false
+          });
+        });
+
+        it("should allow configuring fifo mode", function () {
+          const config = resolveConfig(__filename, {
+            networks: {
+              hardhat: {
+                txpool: {
+                  fifo: true,
+                },
+              },
+            },
+          });
+
+          assert.deepEqual(config.networks.hardhat.txpool, {
+            fifo: true,
+          });
+        });
+      });
+
       it("Should let you configure everything", function () {
         const networkConfig: HardhatNetworkUserConfig = {
           accounts: [{ privateKey: "0x00000", balance: "123" }],
@@ -656,10 +659,12 @@ describe("Config resolution", () => {
           mining: {
             auto: false,
             interval: 0,
-            orderedTxPool: false,
           },
           hardfork: "hola",
           initialDate: "today",
+          txpool: {
+            fifo: false,
+          },
         };
 
         const config = resolveConfig(__filename, {

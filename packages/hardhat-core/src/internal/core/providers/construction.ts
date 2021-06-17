@@ -87,7 +87,7 @@ export function createProvider(
       hardhatNetConfig.throwOnCallFailures,
       hardhatNetConfig.mining.auto,
       hardhatNetConfig.mining.interval,
-      hardhatNetConfig.mining.orderedTxPool,
+      hardhatNetConfig.txpool.fifo,
       new ModulesLogger(hardhatNetConfig.loggingEnabled),
       accounts,
       artifacts,

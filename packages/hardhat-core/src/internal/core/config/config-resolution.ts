@@ -10,6 +10,8 @@ import {
   HardhatNetworkForkingConfig,
   HardhatNetworkMiningConfig,
   HardhatNetworkMiningUserConfig,
+  HardhatNetworkTxpoolConfig,
+  HardhatNetworkTxpoolUserConfig,
   HardhatNetworkUserConfig,
   HardhatUserConfig,
   HDAccountsUserConfig,
@@ -154,6 +156,7 @@ function resolveHardhatNetworkConfig(
   }
 
   const mining = resolveMiningConfig(hardhatNetworkConfig.mining);
+  const txpool = resolveTxpoolConfig(hardhatNetworkConfig.txpool);
 
   const minGasPrice = new BN(
     hardhatNetworkConfig.minGasPrice ??
@@ -179,6 +182,7 @@ function resolveHardhatNetworkConfig(
     gas,
     initialDate,
     minGasPrice,
+    txpool,
   };
 
   // We do it this way because ts gets lost otherwise
@@ -228,13 +232,10 @@ function resolveHttpNetworkConfig(
 function resolveMiningConfig(
   userConfig: HardhatNetworkMiningUserConfig | undefined
 ): HardhatNetworkMiningConfig {
-  const orderedTxPool = userConfig?.orderedTxPool ?? false;
-
   if (userConfig === undefined) {
     return {
       auto: true,
       interval: 0,
-      orderedTxPool: orderedTxPool,
     };
   }
 
@@ -244,7 +245,6 @@ function resolveMiningConfig(
     return {
       auto: true,
       interval: 0,
-      orderedTxPool: orderedTxPool,
     };
   }
 
@@ -252,7 +252,6 @@ function resolveMiningConfig(
     return {
       auto: false,
       interval,
-      orderedTxPool: orderedTxPool,
     };
   }
 
@@ -260,7 +259,6 @@ function resolveMiningConfig(
     return {
       auto,
       interval: 0,
-      orderedTxPool: orderedTxPool,
     };
   }
 
@@ -268,8 +266,21 @@ function resolveMiningConfig(
   return {
     auto: auto!,
     interval: interval!,
-    orderedTxPool: orderedTxPool,
   };
+}
+
+function resolveTxpoolConfig(
+  userConfig: HardhatNetworkTxpoolUserConfig | undefined
+): HardhatNetworkTxpoolConfig {
+  if (userConfig === undefined) {
+    return {
+      fifo: false,
+    };
+  }
+
+  return {
+    fifo: userConfig.fifo ?? false,
+  }
 }
 
 function resolveSolidityConfig(userConfig: HardhatUserConfig): SolidityConfig {

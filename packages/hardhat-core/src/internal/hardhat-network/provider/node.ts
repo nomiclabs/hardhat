@@ -125,7 +125,7 @@ export class HardhatNode extends EventEmitter {
       allowUnlimitedContractSize,
       tracingConfig,
       minGasPrice,
-      orderedTxPool,
+      fifoTxPool,
     } = config;
 
     let common: Common;
@@ -201,7 +201,7 @@ export class HardhatNode extends EventEmitter {
       automine,
       minGasPrice,
       initialBlockTimeOffset,
-      orderedTxPool,
+      fifoTxPool,
       genesisAccounts,
       tracingConfig,
       forkNetworkId,
@@ -273,7 +273,7 @@ Hardhat Network's forking functionality only works with blocks from at least spu
     private _automine: boolean,
     private _minGasPrice: BN,
     private _blockTimeOffsetSeconds: BN = new BN(0),
-    private _orderedTxPool: boolean,
+    private _fifoTxPool: boolean,
     genesisAccounts: GenesisAccount[],
     tracingConfig?: TracingConfig,
     private _forkNetworkId?: number,
@@ -1242,7 +1242,7 @@ Hardhat Network's forking functionality only works with blocks from at least spu
       const minTxFee = this._getMinimalTransactionFee();
       const pendingTxs = this._txPool.getPendingTransactions();
 
-      const txHeap = this._orderedTxPool ? new TxOrderedHeap(pendingTxs) : new TxPriorityHeap(pendingTxs);
+      const txHeap = this._fifoTxPool ? new TxOrderedHeap(pendingTxs) : new TxPriorityHeap(pendingTxs);
 
       let tx = txHeap.peek();
 

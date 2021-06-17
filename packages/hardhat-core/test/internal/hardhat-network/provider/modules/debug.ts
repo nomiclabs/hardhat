@@ -147,7 +147,7 @@ describe("Debug module", function () {
         true,
         false, // mining.auto
         0, // mining.interval
-        false, // mining.orderedTxPool
+        false, // txpool.fifo
         logger,
         DEFAULT_ACCOUNTS,
         undefined,

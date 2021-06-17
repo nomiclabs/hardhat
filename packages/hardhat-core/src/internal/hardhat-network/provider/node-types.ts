@@ -21,7 +21,7 @@ interface CommonConfig {
   allowUnlimitedContractSize?: boolean;
   initialDate?: Date;
   tracingConfig?: TracingConfig;
-  orderedTxPool: boolean;
+  fifoTxPool: boolean;
 }
 
 export type LocalNodeConfig = CommonConfig;

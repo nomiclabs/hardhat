@@ -42,6 +42,7 @@ export interface HardhatNetworkUserConfig {
   initialDate?: string;
   loggingEnabled?: boolean;
   forking?: HardhatNetworkForkingUserConfig;
+  txpool?: HardhatNetworkTxpoolUserConfig;
 }
 
 export type HardhatNetworkAccountsUserConfig =
@@ -116,6 +117,7 @@ export interface HardhatNetworkConfig {
   initialDate: string;
   loggingEnabled: boolean;
   forking?: HardhatNetworkForkingConfig;
+  txpool: HardhatNetworkTxpoolConfig;
 }
 
 export type HardhatNetworkAccountsConfig =
@@ -168,13 +170,19 @@ export interface HttpNetworkHDAccountsConfig {
 export interface HardhatNetworkMiningConfig {
   auto: boolean;
   interval: number | [number, number];
-  orderedTxPool: boolean;
 }
 
 export interface HardhatNetworkMiningUserConfig {
   auto?: boolean;
   interval?: number | [number, number];
-  orderedTxPool?: boolean;
+}
+
+export interface HardhatNetworkTxpoolConfig {
+  fifo: boolean;
+}
+
+export interface HardhatNetworkTxpoolUserConfig {
+  fifo?: boolean;
 }
 
 // Project paths config
