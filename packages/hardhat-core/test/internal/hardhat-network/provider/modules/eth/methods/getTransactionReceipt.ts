@@ -51,6 +51,49 @@ describe("Eth module", function () {
           assert.isNull(receipt);
         });
 
+        it("should return the right tx index and gas used", async function () {
+          const firstBlock = await getFirstBlock();
+          const contractAddress = await deployContract(
+            this.provider,
+            `0x${EXAMPLE_CONTRACT.bytecode.object}`
+          );
+
+          await this.provider.send("evm_setAutomine", [false]);
+          const txHashes = await Promise.all(Array.from(new Array(2)).map(() => this.provider.send("eth_sendTransaction", [
+            {
+              to: contractAddress,
+              from: DEFAULT_ACCOUNTS_ADDRESSES[0],
+              data: `${EXAMPLE_CONTRACT.selectors.modifiesState}000000000000000000000000000000000000000000000000000000000000000a`,
+              gas: "0x" + new BN(150_000).toString(16),
+            },
+          ])));
+
+          await this.provider.send("evm_mine", []);
+          const block: RpcBlockOutput = await this.provider.send(
+            "eth_getBlockByNumber",
+            [numberToRpcQuantity(firstBlock + 2), false]
+          );
+
+          assert.equal(block.transactions.length, 2);
+
+          const receipts = await Promise.all(txHashes.map((txHash) => this.provider.send(
+            "eth_getTransactionReceipt",
+            [txHash]
+          ) as Promise<RpcReceiptOutput>));
+
+          let logIndex = 0;
+          let cumGasUsed = 0;
+
+          for (const receipt of receipts) {
+            cumGasUsed += Number.parseInt(receipt.gasUsed);
+            assert.equal(cumGasUsed, Number.parseInt(receipt.cumulativeGasUsed));
+            for (const event of receipt.logs) {
+              assert.equal(logIndex, Number.parseInt(event.logIndex || "0"));
+              logIndex += 1;
+            }
+          }
+        });
+
         it("should return the right values for successful txs", async function () {
           const firstBlock = await getFirstBlock();
           const contractAddress = await deployContract(
