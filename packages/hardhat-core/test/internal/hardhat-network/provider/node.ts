@@ -53,6 +53,7 @@ describe("HardhatNode", () => {
     blockGasLimit: DEFAULT_BLOCK_GAS_LIMIT,
     minGasPrice: new BN(0),
     genesisAccounts: DEFAULT_ACCOUNTS,
+    orderedTxPool: false,
   };
   const gasPrice = 1;
   let node: HardhatNode;
@@ -168,6 +169,36 @@ describe("HardhatNode", () => {
         await assertTransactionsWereMined([tx1, tx2]);
         const balance = await node.getAccountBalance(EMPTY_ACCOUNT_ADDRESS);
         assert.equal(balance.toString(), "2468");
+      });
+
+      it("can keep the transaction ordering when mining a block", async () => {
+        const [, node] = await HardhatNode.create({...config, orderedTxPool: true});
+
+        const tx1 = createTestTransaction({
+          nonce: 0,
+          from: DEFAULT_ACCOUNTS_ADDRESSES[0],
+          to: EMPTY_ACCOUNT_ADDRESS,
+          gasLimit: 21_000,
+          value: 1234,
+          gasPrice: 42,
+        });
+        const tx2 = createTestTransaction({
+          nonce: 0,
+          from: DEFAULT_ACCOUNTS_ADDRESSES[1],
+          to: EMPTY_ACCOUNT_ADDRESS,
+          gasLimit: 21_000,
+          value: 1234,
+          gasPrice: 84,
+        });
+        await node.sendTransaction(tx1);
+        await node.sendTransaction(tx2);
+        await node.mineBlock();
+
+        const txReceipt1 = await node.getTransactionReceipt(tx1.hash());
+        const txReceipt2 = await node.getTransactionReceipt(tx2.hash());
+
+        assert.equal(txReceipt1?.transactionIndex, "0x0");
+        assert.equal(txReceipt2?.transactionIndex, "0x1");
       });
 
       it("can mine a block with two transactions from the same sender", async () => {
@@ -630,6 +661,7 @@ describe("HardhatNode", () => {
           blockGasLimit: rpcBlock.gasLimit.toNumber(),
           minGasPrice: new BN(0),
           genesisAccounts: [],
+          orderedTxPool: false,
         };
 
         const [common, forkedNode] = await HardhatNode.create(forkedNodeConfig);

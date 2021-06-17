@@ -502,6 +502,7 @@ describe("Config resolution", () => {
           assert.deepEqual(config.networks.hardhat.mining, {
             auto: true,
             interval: 0,
+            orderedTxPool: false,
           });
         });
 
@@ -519,10 +520,11 @@ describe("Config resolution", () => {
           assert.deepEqual(config.networks.hardhat.mining, {
             auto: false,
             interval: 1000,
+            orderedTxPool: false,
           });
         });
 
-        it("should allow cofiguring only automine", function () {
+        it("should allow configuring only automine", function () {
           const config = resolveConfig(__filename, {
             networks: {
               hardhat: {
@@ -536,10 +538,29 @@ describe("Config resolution", () => {
           assert.deepEqual(config.networks.hardhat.mining, {
             auto: false,
             interval: 0,
+            orderedTxPool: false,
           });
         });
 
-        it("should allow cofiguring both values", function () {
+        it("should allow configuring orderedTxPool", function () {
+          const config = resolveConfig(__filename, {
+            networks: {
+              hardhat: {
+                mining: {
+                  orderedTxPool: true,
+                },
+              },
+            },
+          });
+
+          assert.deepEqual(config.networks.hardhat.mining, {
+            auto: true,
+            interval: 0,
+            orderedTxPool: true,
+          });
+        });
+
+        it("should allow configuring both values", function () {
           const config = resolveConfig(__filename, {
             networks: {
               hardhat: {
@@ -554,6 +575,7 @@ describe("Config resolution", () => {
           assert.deepEqual(config.networks.hardhat.mining, {
             auto: true,
             interval: 1000,
+            orderedTxPool: false,
           });
         });
 
@@ -571,6 +593,7 @@ describe("Config resolution", () => {
           assert.deepEqual(config.networks.hardhat.mining, {
             auto: false,
             interval: [1000, 5000],
+            orderedTxPool: false,
           });
         });
       });
@@ -633,6 +656,7 @@ describe("Config resolution", () => {
           mining: {
             auto: false,
             interval: 0,
+            orderedTxPool: false,
           },
           hardfork: "hola",
           initialDate: "today",

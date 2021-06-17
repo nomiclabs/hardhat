@@ -168,11 +168,13 @@ export interface HttpNetworkHDAccountsConfig {
 export interface HardhatNetworkMiningConfig {
   auto: boolean;
   interval: number | [number, number];
+  orderedTxPool: boolean;
 }
 
 export interface HardhatNetworkMiningUserConfig {
   auto?: boolean;
   interval?: number | [number, number];
+  orderedTxPool?: boolean;
 }
 
 // Project paths config

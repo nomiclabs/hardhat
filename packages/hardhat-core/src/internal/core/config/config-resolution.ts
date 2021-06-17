@@ -228,10 +228,13 @@ function resolveHttpNetworkConfig(
 function resolveMiningConfig(
   userConfig: HardhatNetworkMiningUserConfig | undefined
 ): HardhatNetworkMiningConfig {
+  const orderedTxPool = userConfig?.orderedTxPool ?? false;
+
   if (userConfig === undefined) {
     return {
       auto: true,
       interval: 0,
+      orderedTxPool: orderedTxPool,
     };
   }
 
@@ -241,6 +244,7 @@ function resolveMiningConfig(
     return {
       auto: true,
       interval: 0,
+      orderedTxPool: orderedTxPool,
     };
   }
 
@@ -248,6 +252,7 @@ function resolveMiningConfig(
     return {
       auto: false,
       interval,
+      orderedTxPool: orderedTxPool,
     };
   }
 
@@ -255,6 +260,7 @@ function resolveMiningConfig(
     return {
       auto,
       interval: 0,
+      orderedTxPool: orderedTxPool,
     };
   }
 
@@ -262,6 +268,7 @@ function resolveMiningConfig(
   return {
     auto: auto!,
     interval: interval!,
+    orderedTxPool: orderedTxPool,
   };
 }
 

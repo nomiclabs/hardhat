@@ -40,7 +40,7 @@ export const defaultHardhatNetworkParams: Omit<
   throwOnTransactionFailures: true,
   throwOnCallFailures: true,
   allowUnlimitedContractSize: false,
-  mining: { auto: true, interval: 0 },
+  mining: { auto: true, interval: 0, orderedTxPool: false },
   accounts: defaultHardhatNetworkHdAccountsConfigParams,
   loggingEnabled: false,
   gasMultiplier: DEFAULT_GAS_MULTIPLIER,

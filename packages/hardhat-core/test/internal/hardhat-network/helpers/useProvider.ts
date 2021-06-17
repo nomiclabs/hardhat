@@ -71,6 +71,7 @@ export function useProvider({
       true,
       mining.auto,
       mining.interval,
+      mining.orderedTxPool,
       this.logger,
       accounts,
       undefined,
