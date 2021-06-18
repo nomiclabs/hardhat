@@ -97,16 +97,20 @@ describe("Eth module", function () {
             [txHash2]
           );
 
-          assert.equal(rpcQuantityToNumber(receipt1.gasUsed), 44945);
-          assert.equal(rpcQuantityToNumber(receipt1.cumulativeGasUsed), 44945);
+          const gasUsed1 = rpcQuantityToNumber(receipt1.gasUsed);
+          const gasUsed2 = rpcQuantityToNumber(receipt2.gasUsed);
+          const cumulativeGasUsed1 = rpcQuantityToNumber(
+            receipt1.cumulativeGasUsed
+          );
+          const cumulativeGasUsed2 = rpcQuantityToNumber(
+            receipt2.cumulativeGasUsed
+          );
+
+          assert.equal(cumulativeGasUsed1, gasUsed1);
           assert.lengthOf(receipt1.logs, 1);
           assert.equal(receipt1.logs[0].logIndex, "0x0");
 
-          assert.equal(rpcQuantityToNumber(receipt2.gasUsed), 25045);
-          assert.equal(
-            rpcQuantityToNumber(receipt2.cumulativeGasUsed),
-            44945 + 25045
-          );
+          assert.equal(cumulativeGasUsed2, cumulativeGasUsed1 + gasUsed2);
           assert.lengthOf(receipt2.logs, 1);
           assert.equal(receipt2.logs[0].logIndex!, "0x1");
         });
