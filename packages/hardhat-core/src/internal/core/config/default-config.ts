@@ -40,12 +40,17 @@ export const defaultHardhatNetworkParams: Omit<
   throwOnTransactionFailures: true,
   throwOnCallFailures: true,
   allowUnlimitedContractSize: false,
-  mining: { auto: true, interval: 0 },
+  mining: {
+    auto: true,
+    interval: 0,
+    mempool: {
+      order: "priority",
+    },
+  },
   accounts: defaultHardhatNetworkHdAccountsConfigParams,
   loggingEnabled: false,
   gasMultiplier: DEFAULT_GAS_MULTIPLIER,
   minGasPrice: new BN(0),
-  txpool: { fifo: false },
 };
 
 export const defaultHttpNetworkParams = {

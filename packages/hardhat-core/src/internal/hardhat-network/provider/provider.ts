@@ -39,6 +39,7 @@ import {
   ForkConfig,
   GenesisAccount,
   IntervalMiningConfig,
+  MempoolOrder,
   NodeConfig,
   TracingConfig,
 } from "./node-types";
@@ -76,7 +77,7 @@ export class HardhatNetworkProvider extends EventEmitter
     private readonly _throwOnCallFailures: boolean,
     private readonly _automine: boolean,
     private readonly _intervalMining: IntervalMiningConfig,
-    private readonly _fifoTxPool: boolean,
+    private readonly _mempoolOrder: MempoolOrder,
     private readonly _logger: ModulesLogger,
     private readonly _genesisAccounts: GenesisAccount[] = [],
     private readonly _artifacts?: Artifacts,
@@ -218,7 +219,7 @@ export class HardhatNetworkProvider extends EventEmitter
       genesisAccounts: this._genesisAccounts,
       allowUnlimitedContractSize: this._allowUnlimitedContractSize,
       tracingConfig: await this._makeTracingConfig(),
-      fifoTxPool: this._fifoTxPool,
+      mempoolOrder: this._mempoolOrder,
     };
 
     let config: NodeConfig = {

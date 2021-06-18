@@ -6,8 +6,8 @@ import { ForkConfig } from "../../../../src/internal/hardhat-network/provider/no
 import { HardhatNetworkProvider } from "../../../../src/internal/hardhat-network/provider/provider";
 import {
   EthereumProvider,
+  HardhatNetworkMempoolConfig,
   HardhatNetworkMiningConfig,
-  HardhatNetworkTxpoolConfig,
 } from "../../../../src/types";
 
 import { FakeModulesLogger } from "./fakeLogger";
@@ -20,7 +20,7 @@ import {
   DEFAULT_MINING_CONFIG,
   DEFAULT_NETWORK_ID,
   DEFAULT_NETWORK_NAME,
-  DEFAULT_TXPOOL_CONFIG,
+  DEFAULT_MEMPOOL_CONFIG,
   DEFAULT_USE_JSON_RPC,
 } from "./providers";
 
@@ -45,7 +45,7 @@ export interface UseProviderOptions {
   blockGasLimit?: number;
   accounts?: Array<{ privateKey: string; balance: BN }>;
   allowUnlimitedContractSize?: boolean;
-  txPool?: HardhatNetworkTxpoolConfig;
+  mempool?: HardhatNetworkMempoolConfig;
 }
 
 export function useProvider({
@@ -60,7 +60,7 @@ export function useProvider({
   blockGasLimit = DEFAULT_BLOCK_GAS_LIMIT,
   accounts = DEFAULT_ACCOUNTS,
   allowUnlimitedContractSize = DEFAULT_ALLOW_UNLIMITED_CONTRACT_SIZE,
-  txPool = DEFAULT_TXPOOL_CONFIG,
+  mempool = DEFAULT_MEMPOOL_CONFIG,
 }: UseProviderOptions = {}) {
   beforeEach("Initialize provider", async function () {
     this.logger = new FakeModulesLogger(loggerEnabled);
@@ -75,7 +75,7 @@ export function useProvider({
       true,
       mining.auto,
       mining.interval,
-      txPool.fifo,
+      mempool.order,
       this.logger,
       accounts,
       undefined,

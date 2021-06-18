@@ -10,8 +10,8 @@ import {
   HardhatNetworkForkingConfig,
   HardhatNetworkMiningConfig,
   HardhatNetworkMiningUserConfig,
-  HardhatNetworkTxpoolConfig,
-  HardhatNetworkTxpoolUserConfig,
+  HardhatNetworkMempoolConfig,
+  HardhatNetworkMempoolUserConfig,
   HardhatNetworkUserConfig,
   HardhatUserConfig,
   HDAccountsUserConfig,
@@ -30,7 +30,7 @@ import {
   SolidityConfig,
   SolidityUserConfig,
 } from "../../../types";
-import { HARDHAT_NETWORK_NAME } from "../../constants";
+import { HARDHAT_MEMPOOL_SUPPORTED_ORDERS, HARDHAT_NETWORK_NAME } from "../../constants";
 import { fromEntries } from "../../util/lang";
 import { assertHardhatInvariant } from "../errors";
 
@@ -156,7 +156,6 @@ function resolveHardhatNetworkConfig(
   }
 
   const mining = resolveMiningConfig(hardhatNetworkConfig.mining);
-  const txpool = resolveTxpoolConfig(hardhatNetworkConfig.txpool);
 
   const minGasPrice = new BN(
     hardhatNetworkConfig.minGasPrice ??
@@ -182,7 +181,6 @@ function resolveHardhatNetworkConfig(
     gas,
     initialDate,
     minGasPrice,
-    txpool,
   };
 
   // We do it this way because ts gets lost otherwise
@@ -232,10 +230,12 @@ function resolveHttpNetworkConfig(
 function resolveMiningConfig(
   userConfig: HardhatNetworkMiningUserConfig | undefined
 ): HardhatNetworkMiningConfig {
+  const mempool = resolveMempoolConfig(userConfig?.mempool);
   if (userConfig === undefined) {
     return {
       auto: true,
       interval: 0,
+      mempool,
     };
   }
 
@@ -245,6 +245,7 @@ function resolveMiningConfig(
     return {
       auto: true,
       interval: 0,
+      mempool,
     };
   }
 
@@ -252,6 +253,7 @@ function resolveMiningConfig(
     return {
       auto: false,
       interval,
+      mempool,
     };
   }
 
@@ -259,6 +261,7 @@ function resolveMiningConfig(
     return {
       auto,
       interval: 0,
+      mempool,
     };
   }
 
@@ -266,21 +269,28 @@ function resolveMiningConfig(
   return {
     auto: auto!,
     interval: interval!,
+    mempool,
   };
 }
 
-function resolveTxpoolConfig(
-  userConfig: HardhatNetworkTxpoolUserConfig | undefined
-): HardhatNetworkTxpoolConfig {
+function resolveMempoolConfig(
+  userConfig: HardhatNetworkMempoolUserConfig | undefined
+): HardhatNetworkMempoolConfig {
   if (userConfig === undefined) {
     return {
-      fifo: false,
+      order: "priority",
+    };
+  }
+
+  if (userConfig.order === undefined) {
+    return {
+      order: "priority",
     };
   }
 
   return {
-    fifo: userConfig.fifo ?? false,
-  }
+    order: userConfig.order,
+  } as HardhatNetworkMempoolConfig;
 }
 
 function resolveSolidityConfig(userConfig: HardhatUserConfig): SolidityConfig {

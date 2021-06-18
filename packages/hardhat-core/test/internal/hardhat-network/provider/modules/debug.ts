@@ -147,7 +147,7 @@ describe("Debug module", function () {
         true,
         false, // mining.auto
         0, // mining.interval
-        false, // txpool.fifo
+        "priority", // mining.mempool.order
         logger,
         DEFAULT_ACCOUNTS,
         undefined,

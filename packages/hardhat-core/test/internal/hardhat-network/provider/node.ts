@@ -53,7 +53,7 @@ describe("HardhatNode", () => {
     blockGasLimit: DEFAULT_BLOCK_GAS_LIMIT,
     minGasPrice: new BN(0),
     genesisAccounts: DEFAULT_ACCOUNTS,
-    fifoTxPool: false,
+    mempoolOrder: "priority",
   };
   const gasPrice = 1;
   let node: HardhatNode;
@@ -172,7 +172,7 @@ describe("HardhatNode", () => {
       });
 
       it("can keep the transaction ordering when mining a block", async () => {
-        const [, node] = await HardhatNode.create({...config, fifoTxPool: true});
+        const [, node] = await HardhatNode.create({...config, mempoolOrder: "fifo" });
 
         const tx1 = createTestTransaction({
           nonce: 0,
@@ -661,7 +661,7 @@ describe("HardhatNode", () => {
           blockGasLimit: rpcBlock.gasLimit.toNumber(),
           minGasPrice: new BN(0),
           genesisAccounts: [],
-          fifoTxPool: false,
+          mempoolOrder: "priority",
         };
 
         const [common, forkedNode] = await HardhatNode.create(forkedNodeConfig);

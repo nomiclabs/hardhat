@@ -1,5 +1,5 @@
 import { BN, bufferToHex, privateToAddress, toBuffer } from "ethereumjs-util";
-import { HardhatNetworkMiningConfig, HardhatNetworkTxpoolConfig } from "../../../../src/types";
+import { HardhatNetworkMempoolConfig, HardhatNetworkMiningConfig } from "../../../../src/types";
 
 import { ALCHEMY_URL, INFURA_URL } from "../../../setup";
 
@@ -12,12 +12,14 @@ export const DEFAULT_NETWORK_ID = 234;
 export const DEFAULT_BLOCK_GAS_LIMIT = 6000000;
 export const DEFAULT_USE_JSON_RPC = false;
 export const DEFAULT_ALLOW_UNLIMITED_CONTRACT_SIZE = false;
+
+export const DEFAULT_MEMPOOL_CONFIG: HardhatNetworkMempoolConfig = {
+  order: "priority",
+};
 export const DEFAULT_MINING_CONFIG: HardhatNetworkMiningConfig = {
   auto: true,
   interval: 0,
-};
-export const DEFAULT_TXPOOL_CONFIG: HardhatNetworkTxpoolConfig = {
-  fifo: false,
+  mempool: DEFAULT_MEMPOOL_CONFIG,
 };
 
 // Assumptions:
@@ -82,6 +84,7 @@ export const INTERVAL_MINING_PROVIDERS = [
         mining: {
           auto: false,
           interval: 10000,
+          mempool: DEFAULT_MEMPOOL_CONFIG,
         },
         ...options,
       });
@@ -98,6 +101,7 @@ export const INTERVAL_MINING_PROVIDERS = [
         mining: {
           auto: false,
           interval: 10000,
+          mempool: DEFAULT_MEMPOOL_CONFIG,
         },
         ...options,
       });
@@ -142,6 +146,7 @@ if (ALCHEMY_URL !== undefined) {
         mining: {
           auto: false,
           interval: 10000,
+          mempool: DEFAULT_MEMPOOL_CONFIG,
         },
         ...options,
       });
