@@ -47,4 +47,33 @@ describe("command-line interface", function () {
       }
     });
   });
+
+  describe("advanced sample project", function () {
+    it("should successfully execute all of the suggested commands in the advanced sample project", async function () {
+      process.chdir(this.tmpDir);
+      try {
+        child_process.execSync("yarn init --yes");
+        child_process.execSync(`yarn add --dev file:${getPackageRoot()}`);
+        child_process.execSync("npx hardhat", {
+          env: {
+            ...process.env,
+            HARDHAT_CREATE_ADVANCED_SAMPLE_PROJECT_WITH_DEFAULTS: "true",
+          },
+        });
+        child_process.execSync("npx hardhat compile");
+        child_process.execSync("npx hardhat test");
+        child_process.execSync("node scripts/sample-script.js");
+        child_process.execSync("REPORT_GAS=true npx hardhat test");
+        child_process.execSync("npx hardhat coverage");
+        child_process.execSync("npx eslint '**'");
+        child_process.execSync("npx eslint '**' --fix");
+        child_process.execSync("npx solhint '**/*.sol'");
+        child_process.execSync("npx solhint '**/*.sol' --fix");
+      } catch (error) {
+        assert.fail(
+          `error status ${error.status}, message: "${error.message}", stderr: "${error.stderr}", stdout: "${error.stdout}"`
+        );
+      }
+    });
+  });
 });
