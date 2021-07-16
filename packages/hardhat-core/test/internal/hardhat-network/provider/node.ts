@@ -171,7 +171,10 @@ describe("HardhatNode", () => {
       });
 
       it("can keep the transaction ordering when mining a block", async () => {
-        const [, node] = await HardhatNode.create({...config, mempoolOrder: "fifo" });
+        [, node] = await HardhatNode.create({
+          ...config,
+          mempoolOrder: "fifo",
+        });
 
         const tx1 = createTestTransaction({
           nonce: 0,

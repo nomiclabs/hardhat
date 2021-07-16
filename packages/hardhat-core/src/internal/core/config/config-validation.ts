@@ -125,7 +125,9 @@ const HardhatNetworkForkingConfig = t.type({
 const HardhatNetworkMempoolConfig = t.type({
   order: optional(
     t.keyof(
-      fromEntries(HARDHAT_MEMPOOL_SUPPORTED_ORDERS.map((order) => [order, null]))
+      fromEntries(
+        HARDHAT_MEMPOOL_SUPPORTED_ORDERS.map((order) => [order, null])
+      )
     )
   ),
 });

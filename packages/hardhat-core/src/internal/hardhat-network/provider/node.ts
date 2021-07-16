@@ -202,7 +202,7 @@ export class HardhatNode extends EventEmitter {
       mempoolOrder,
       genesisAccounts,
       tracingConfig,
-      forkNetworkId,
+      forkNetworkId
     );
 
     return [common, node];
@@ -260,7 +260,7 @@ Hardhat Network's forking functionality only works with blocks from at least spu
   private readonly _solidityTracer: SolidityTracer;
   private readonly _consoleLogger: ConsoleLogger = new ConsoleLogger();
   private _failedStackTraces = 0;
-  
+
   private _irregularStatesByBlockNumber: Map<string, Buffer> = new Map(); // blockNumber as BN.toString() => state root
 
   private constructor(
@@ -274,7 +274,7 @@ Hardhat Network's forking functionality only works with blocks from at least spu
     private _mempoolOrder: MempoolOrder,
     genesisAccounts: GenesisAccount[],
     tracingConfig?: TracingConfig,
-    private _forkNetworkId?: number,
+    private _forkNetworkId?: number
   ) {
     super();
 

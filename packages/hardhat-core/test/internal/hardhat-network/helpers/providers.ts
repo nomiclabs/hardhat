@@ -1,5 +1,8 @@
 import { BN, bufferToHex, privateToAddress, toBuffer } from "ethereumjs-util";
-import { HardhatNetworkMempoolConfig, HardhatNetworkMiningConfig } from "../../../../src/types";
+import {
+  HardhatNetworkMempoolConfig,
+  HardhatNetworkMiningConfig,
+} from "../../../../src/types";
 
 import { ALCHEMY_URL, INFURA_URL } from "../../../setup";
 

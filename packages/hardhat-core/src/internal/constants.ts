@@ -19,10 +19,7 @@ export const HARDHAT_NETWORK_SUPPORTED_HARDFORKS = [
   "berlin",
 ];
 
-export const HARDHAT_MEMPOOL_SUPPORTED_ORDERS = <const>[
-  "fifo",
-  "priority",
-];
+export const HARDHAT_MEMPOOL_SUPPORTED_ORDERS = <const>["fifo", "priority"];
 
 export const ARTIFACT_FORMAT_VERSION = "hh-sol-artifact-1";
 export const DEBUG_FILE_FORMAT_VERSION = "hh-sol-dbg-1";

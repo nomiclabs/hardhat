@@ -595,8 +595,8 @@ describe("Config resolution", () => {
               hardhat: {
                 mining: {
                   mempool: {
-                    order: "fifo"
-                  }
+                    order: "fifo",
+                  },
                 },
               },
             },

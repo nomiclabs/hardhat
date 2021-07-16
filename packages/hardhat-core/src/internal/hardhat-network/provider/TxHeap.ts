@@ -1,5 +1,4 @@
 import { TypedTransaction } from "@ethereumjs/tx";
-import { BN } from "ethereumjs-util";
 import { MaxHeap } from "mnemonist/heap";
 
 import { OrderedTransaction } from "./PoolState";
@@ -19,9 +18,12 @@ export class TxHeap {
    * (i.e. all transactions from the same sender can be executed one by one).
    * @param pendingTransactions map of (sender address) => (pending transactions list)
    */
-  constructor(pendingTransactions: Map<string, OrderedTransaction[]>, heap: MaxHeap<OrderedTransaction>) {
+  constructor(
+    pendingTransactions: Map<string, OrderedTransaction[]>,
+    heap: MaxHeap<OrderedTransaction>
+  ) {
     this._heap = heap;
-    
+
     for (const [address, txList] of pendingTransactions) {
       const [firstTx, ...remainingTxs] = txList;
       this._heap.push(firstTx);

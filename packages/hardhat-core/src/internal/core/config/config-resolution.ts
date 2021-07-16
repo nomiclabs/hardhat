@@ -30,7 +30,7 @@ import {
   SolidityConfig,
   SolidityUserConfig,
 } from "../../../types";
-import { HARDHAT_MEMPOOL_SUPPORTED_ORDERS, HARDHAT_NETWORK_NAME } from "../../constants";
+import { HARDHAT_NETWORK_NAME } from "../../constants";
 import { fromEntries } from "../../util/lang";
 import { assertHardhatInvariant } from "../errors";
 

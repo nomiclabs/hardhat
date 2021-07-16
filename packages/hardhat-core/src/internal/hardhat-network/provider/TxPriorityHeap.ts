@@ -17,6 +17,9 @@ function compareTransactions(
 
 export class TxPriorityHeap extends TxHeap {
   constructor(pendingTransactions: Map<string, OrderedTransaction[]>) {
-    super(pendingTransactions, new MaxHeap<OrderedTransaction>(compareTransactions));
+    super(
+      pendingTransactions,
+      new MaxHeap<OrderedTransaction>(compareTransactions)
+    );
   }
 }
