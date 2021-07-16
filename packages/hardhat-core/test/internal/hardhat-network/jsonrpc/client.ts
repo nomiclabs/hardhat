@@ -73,6 +73,7 @@ describe("JsonRpcClient", () => {
         clientWithFakeProvider = new JsonRpcClient(
           fakeProvider as any,
           1,
+          1,
           123,
           3
         );
@@ -87,6 +88,7 @@ describe("JsonRpcClient", () => {
         clientWithFakeProvider = new JsonRpcClient(
           fakeProvider as any,
           1,
+          1,
           123,
           3
         );
@@ -100,6 +102,7 @@ describe("JsonRpcClient", () => {
       it("is parameter aware", async () => {
         clientWithFakeProvider = new JsonRpcClient(
           fakeProvider as any,
+          1,
           1,
           123,
           3
@@ -120,6 +123,7 @@ describe("JsonRpcClient", () => {
         beforeEach(function () {
           clientWithFakeProvider = new JsonRpcClient(
             fakeProvider as any,
+            1,
             1,
             123,
             3,
@@ -147,6 +151,7 @@ describe("JsonRpcClient", () => {
           // It should read from the disk, instead of making a new request.
           clientWithFakeProvider = new JsonRpcClient(
             fakeProvider as any,
+            1,
             1,
             123,
             3,
@@ -182,6 +187,7 @@ describe("JsonRpcClient", () => {
         const clientWithFakeProvider = new JsonRpcClient(
           fakeProvider as any,
           1,
+          1,
           123,
           3
         );
@@ -212,6 +218,7 @@ describe("JsonRpcClient", () => {
         const clientWithFakeProvider = new JsonRpcClient(
           fakeProvider as any,
           1,
+          1,
           123,
           3
         );
@@ -241,6 +248,7 @@ describe("JsonRpcClient", () => {
         const clientWithFakeProvider = new JsonRpcClient(
           fakeProvider as any,
           1,
+          1,
           123,
           3
         );
@@ -268,6 +276,7 @@ describe("JsonRpcClient", () => {
 
         const clientWithFakeProvider = new JsonRpcClient(
           fakeProvider as any,
+          1,
           1,
           123,
           3
