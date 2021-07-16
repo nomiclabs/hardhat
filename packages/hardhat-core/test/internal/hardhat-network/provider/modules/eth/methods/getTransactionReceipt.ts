@@ -1,7 +1,10 @@
 import { assert } from "chai";
 import { BN, bufferToHex, toBuffer } from "ethereumjs-util";
 
-import { numberToRpcQuantity } from "../../../../../../../internal/core/jsonrpc/types/base-types";
+import {
+  numberToRpcQuantity,
+  rpcQuantityToNumber,
+} from "../../../../../../../internal/core/jsonrpc/types/base-types";
 import { TransactionParams } from "../../../../../../../internal/hardhat-network/provider/node-types";
 import {
   RpcBlockOutput,
@@ -49,6 +52,67 @@ describe("Eth module", function () {
           );
 
           assert.isNull(receipt);
+        });
+
+        it("should return the right tx index and gas used", async function () {
+          const firstBlock = await getFirstBlock();
+          const contractAddress = await deployContract(
+            this.provider,
+            `0x${EXAMPLE_CONTRACT.bytecode.object}`
+          );
+
+          await this.provider.send("evm_setAutomine", [false]);
+
+          const txHash1 = await this.provider.send("eth_sendTransaction", [
+            {
+              to: contractAddress,
+              from: DEFAULT_ACCOUNTS_ADDRESSES[0],
+              data: `${EXAMPLE_CONTRACT.selectors.modifiesState}000000000000000000000000000000000000000000000000000000000000000a`,
+              gas: numberToRpcQuantity(150_000),
+            },
+          ]);
+          const txHash2 = await this.provider.send("eth_sendTransaction", [
+            {
+              to: contractAddress,
+              from: DEFAULT_ACCOUNTS_ADDRESSES[0],
+              data: `${EXAMPLE_CONTRACT.selectors.modifiesState}000000000000000000000000000000000000000000000000000000000000000a`,
+              gas: numberToRpcQuantity(150_000),
+            },
+          ]);
+
+          await this.provider.send("evm_mine", []);
+          const block: RpcBlockOutput = await this.provider.send(
+            "eth_getBlockByNumber",
+            [numberToRpcQuantity(firstBlock + 2), false]
+          );
+
+          assert.equal(block.transactions.length, 2);
+
+          const receipt1: RpcReceiptOutput = await this.provider.send(
+            "eth_getTransactionReceipt",
+            [txHash1]
+          );
+          const receipt2: RpcReceiptOutput = await this.provider.send(
+            "eth_getTransactionReceipt",
+            [txHash2]
+          );
+
+          const gasUsed1 = rpcQuantityToNumber(receipt1.gasUsed);
+          const gasUsed2 = rpcQuantityToNumber(receipt2.gasUsed);
+          const cumulativeGasUsed1 = rpcQuantityToNumber(
+            receipt1.cumulativeGasUsed
+          );
+          const cumulativeGasUsed2 = rpcQuantityToNumber(
+            receipt2.cumulativeGasUsed
+          );
+
+          assert.equal(cumulativeGasUsed1, gasUsed1);
+          assert.lengthOf(receipt1.logs, 1);
+          assert.equal(receipt1.logs[0].logIndex, "0x0");
+
+          assert.equal(cumulativeGasUsed2, cumulativeGasUsed1 + gasUsed2);
+          assert.lengthOf(receipt2.logs, 1);
+          assert.equal(receipt2.logs[0].logIndex!, "0x1");
         });
 
         it("should return the right values for successful txs", async function () {
