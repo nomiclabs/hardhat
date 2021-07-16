@@ -23,4 +23,8 @@ export function useTmpDir(nameHint: string) {
   beforeEach("Creating tmp dir", async function () {
     this.tmpDir = await getEmptyTmpDir(nameHint);
   });
+
+  afterEach("Removing tmp dir", async function () {
+    fsExtra.removeSync(this.tmpDir);
+  });
 }
