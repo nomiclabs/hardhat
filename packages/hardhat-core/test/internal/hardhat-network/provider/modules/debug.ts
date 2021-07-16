@@ -147,6 +147,7 @@ describe("Debug module", function () {
         true,
         false, // mining.auto
         0, // mining.interval
+        "priority", // mining.mempool.order
         logger,
         DEFAULT_ACCOUNTS,
         undefined,

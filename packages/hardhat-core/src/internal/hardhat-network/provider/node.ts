@@ -70,6 +70,7 @@ import {
   FilterParams,
   GatherTracesResult,
   GenesisAccount,
+  MempoolOrder,
   MineBlockResult,
   NodeConfig,
   RunCallResult,
@@ -85,10 +86,12 @@ import {
   RpcReceiptOutput,
   shouldShowTransactionTypeForHardfork,
 } from "./output";
+import { OrderedTransaction } from "./PoolState";
 import { ReturnData } from "./return-data";
 import { FakeSenderAccessListEIP2930Transaction } from "./transactions/FakeSenderAccessListEIP2930Transaction";
 import { FakeSenderTransaction } from "./transactions/FakeSenderTransaction";
 import { TxPool } from "./TxPool";
+import { TxOrderedHeap } from "./TxOrderedHeap";
 import { TxPriorityHeap } from "./TxPriorityHeap";
 import { HardhatBlockchainInterface } from "./types/HardhatBlockchainInterface";
 import { getCurrentTimestamp } from "./utils/getCurrentTimestamp";
@@ -97,6 +100,7 @@ import { makeForkClient } from "./utils/makeForkClient";
 import { makeForkCommon } from "./utils/makeForkCommon";
 import { putGenesisBlock } from "./utils/putGenesisBlock";
 import { txMapToArray } from "./utils/txMapToArray";
+import { TxHeap } from "./TxHeap";
 
 const log = debug("hardhat:core:hardhat-network:node");
 
@@ -119,6 +123,7 @@ export class HardhatNode extends EventEmitter {
       allowUnlimitedContractSize,
       tracingConfig,
       minGasPrice,
+      mempoolOrder,
     } = config;
 
     let common: Common;
@@ -194,6 +199,7 @@ export class HardhatNode extends EventEmitter {
       automine,
       minGasPrice,
       initialBlockTimeOffset,
+      mempoolOrder,
       genesisAccounts,
       tracingConfig,
       forkNetworkId
@@ -265,6 +271,7 @@ Hardhat Network's forking functionality only works with blocks from at least spu
     private _automine: boolean,
     private _minGasPrice: BN,
     private _blockTimeOffsetSeconds: BN = new BN(0),
+    private _mempoolOrder: MempoolOrder,
     genesisAccounts: GenesisAccount[],
     tracingConfig?: TracingConfig,
     private _forkNetworkId?: number
@@ -1232,7 +1239,8 @@ Hardhat Network's forking functionality only works with blocks from at least spu
       const blockGasLimit = this.getBlockGasLimit();
       const minTxFee = this._getMinimalTransactionFee();
       const pendingTxs = this._txPool.getPendingTransactions();
-      const txHeap = new TxPriorityHeap(pendingTxs);
+
+      const txHeap = this._getTxHeap(pendingTxs);
 
       let tx = txHeap.peek();
 
@@ -1283,6 +1291,21 @@ Hardhat Network's forking functionality only works with blocks from at least spu
     } catch (err) {
       await blockBuilder.revert();
       throw err;
+    }
+  }
+
+  /**
+   * Returns the TxHeap instance corresponding to the required mempool ordering:
+   *  - priority (default) returns a PriorityHeap, which prioritize transactions with higher gas-price
+   *  - fifo returns an OrderedHeap, which orders transactions based on when they have been received
+   */
+  private _getTxHeap(pendingTxs: Map<string, OrderedTransaction[]>): TxHeap {
+    switch (this._mempoolOrder) {
+      case "fifo":
+        return new TxOrderedHeap(pendingTxs);
+      case "priority":
+      default:
+        return new TxPriorityHeap(pendingTxs);
     }
   }
 

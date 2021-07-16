@@ -13,6 +13,7 @@
 // trying to augment the config types.
 
 import type { BN } from "ethereumjs-util";
+import { HARDHAT_MEMPOOL_SUPPORTED_ORDERS } from "../internal/constants";
 
 // Networks config
 
@@ -168,11 +169,22 @@ export interface HttpNetworkHDAccountsConfig {
 export interface HardhatNetworkMiningConfig {
   auto: boolean;
   interval: number | [number, number];
+  mempool: HardhatNetworkMempoolConfig;
 }
 
 export interface HardhatNetworkMiningUserConfig {
   auto?: boolean;
   interval?: number | [number, number];
+  mempool?: HardhatNetworkMempoolUserConfig;
+}
+
+export interface HardhatNetworkMempoolConfig {
+  // order should be on of `HARDHAT_MEMPOOL_SUPPORTED_ORDERS` entries
+  order: typeof HARDHAT_MEMPOOL_SUPPORTED_ORDERS[number];
+}
+
+export interface HardhatNetworkMempoolUserConfig {
+  order?: string;
 }
 
 // Project paths config
