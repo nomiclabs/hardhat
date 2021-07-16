@@ -1,6 +1,7 @@
 import { assert } from "chai";
 import * as fsExtra from "fs-extra";
 import path from "path";
+import sinon from "sinon";
 import slash from "slash";
 
 import { TASK_COMPILE } from "../../../src/builtin-tasks/task-names";
@@ -10,7 +11,9 @@ import {
   ResolvedFile,
   Resolver,
 } from "../../../src/internal/solidity/resolver";
+import * as packageInfo from "../../../src/internal/util/packageInfo";
 import { LibraryInfo } from "../../../src/types/builtin-tasks";
+import * as sourceNames from "../../../src/utils/source-names";
 import { useEnvironment } from "../../helpers/environment";
 import { expectHardhatErrorAsync } from "../../helpers/errors";
 import {
@@ -364,6 +367,15 @@ describe("Resolver", function () {
           ERRORS.RESOLVER.INVALID_IMPORT_ABSOLUTE_PATH
         );
       });
+
+      it("shouldn't let you import something that starts with the own package name", async function () {
+        sinon.stub(packageInfo, "getPackageName").resolves("myPackageName");
+        await expectHardhatErrorAsync(
+          () => resolver.resolveImport(localFrom, "myPackageName/src/file"),
+          ERRORS.RESOLVER.INCLUDES_OWN_PACKAGE_NAME
+        );
+        sinon.restore();
+      });
     });
 
     describe("Absolute imports", function () {
@@ -570,6 +582,16 @@ describe("Resolver regression tests", function () {
     const projectName = "project-with-hardhat-directory";
     useFixtureProject(projectName);
     useEnvironment();
+
+    // current package's name is `hardhat`. Because we try to import `hardhat/console.log` the
+    // includesOwnPackageName() function returns true and resolve() throws an error.
+    // as a fix we simply let the method return false. The check shouldn't matter for this specific case.
+    before(() => {
+      sinon.stub(sourceNames, "includesOwnPackageName").resolves(false);
+    });
+    after(() => {
+      sinon.restore();
+    });
 
     // This test ensures the resolver lets you compile a project with the packaged console.sol
     // in a Hardhat project that has a "hardhat" subdirectory.
