@@ -1071,9 +1071,13 @@ Hardhat Network's forking functionality only works with blocks from at least spu
               common: vm._common,
             });
           } else if (tx.type === 1) {
-            txWithCommon = new FakeSenderAccessListEIP2930Transaction(sender, tx, {
-              common: vm._common,
-            });
+            txWithCommon = new FakeSenderAccessListEIP2930Transaction(
+              sender,
+              tx,
+              {
+                common: vm._common,
+              }
+            );
           } else {
             throw new InternalError(
               "Only legacy and EIP2930 txs are supported"
