@@ -6,6 +6,10 @@ import {
   numberToRpcQuantity,
   rpcQuantityToNumber,
 } from "../../../core/jsonrpc/types/base-types";
+import {
+  getChainIdFromEthChainId,
+  getNetworkIdFromNetVersion,
+} from "../../../core/providers/chainId";
 import { HttpProvider } from "../../../core/providers/http";
 import { JsonRpcClient } from "../../jsonrpc/client";
 import { ForkConfig } from "../node-types";
@@ -37,7 +41,14 @@ export async function makeForkClient(
     FORK_HTTP_TIMEOUT
   );
 
-  const networkId = await getNetworkId(provider);
+  const networkId = await getNetworkIdFromNetVersion(provider);
+  let chainId;
+  try {
+    chainId = await getChainIdFromEthChainId(provider);
+  } catch (error) {
+    chainId = networkId;
+  }
+
   const actualMaxReorg = getLargestPossibleReorg(networkId);
   const maxReorg = actualMaxReorg ?? FALLBACK_MAX_REORG;
 
@@ -85,6 +96,7 @@ Please use block number ${lastSafeBlock} or wait for the block to get ${
   const forkClient = new JsonRpcClient(
     provider,
     networkId,
+    chainId,
     latestBlock,
     maxReorg,
     cacheToDiskEnabled ? forkCachePath : undefined
@@ -103,13 +115,6 @@ async function getBlockByNumber(
   })) as RpcBlockOutput;
 
   return rpcBlockOutput;
-}
-
-async function getNetworkId(provider: HttpProvider) {
-  const networkIdString = (await provider.request({
-    method: "net_version",
-  })) as string;
-  return parseInt(networkIdString, 10);
 }
 
 async function getLatestBlockNumber(provider: HttpProvider) {

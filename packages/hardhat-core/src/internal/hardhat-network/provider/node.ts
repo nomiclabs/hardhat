@@ -127,6 +127,7 @@ export class HardhatNode extends EventEmitter {
     let initialBlockTimeOffset: BN | undefined;
 
     let forkNetworkId: number | undefined;
+    let forkChainId: number | undefined;
 
     if ("forkConfig" in config) {
       const {
@@ -137,11 +138,12 @@ export class HardhatNode extends EventEmitter {
       common = await makeForkCommon(config);
 
       forkNetworkId = forkClient.getNetworkId();
+      forkChainId = forkClient.getChainId();
 
       this._validateHardforks(
         config.forkConfig.blockNumber,
         common,
-        forkNetworkId
+        forkChainId ?? forkNetworkId
       );
 
       const forkStateManager = new ForkStateManager(
@@ -196,7 +198,8 @@ export class HardhatNode extends EventEmitter {
       initialBlockTimeOffset,
       genesisAccounts,
       tracingConfig,
-      forkNetworkId
+      forkNetworkId,
+      forkChainId
     );
 
     return [common, node];
@@ -267,7 +270,8 @@ Hardhat Network's forking functionality only works with blocks from at least spu
     private _blockTimeOffsetSeconds: BN = new BN(0),
     genesisAccounts: GenesisAccount[],
     tracingConfig?: TracingConfig,
-    private _forkNetworkId?: number
+    private _forkNetworkId?: number,
+    private _forkChainId?: number
   ) {
     super();
 
@@ -1093,6 +1097,10 @@ Hardhat Network's forking functionality only works with blocks from at least spu
         );
       }
     );
+  }
+
+  public async getForkedChainId(): Promise<number | undefined> {
+    return this._forkChainId;
   }
 
   private async _addPendingTransaction(tx: TypedTransaction): Promise<string> {

@@ -376,6 +376,19 @@ describe("Hardhat module", function () {
         }
       });
 
+      describe("hardhat_getForkedChainId", function () {
+        it("gets correct chainId", async function () {
+          const hardhatChainId = await this.provider.send(
+            "hardhat_getForkedChainId"
+          );
+          if (isFork) {
+            assert.equal(hardhatChainId, 1);
+          } else {
+            assert.isNull(hardhatChainId);
+          }
+        });
+      });
+
       describe("hardhat_setBalance", function () {
         it("should reject an invalid address", async function () {
           await assertInvalidArgumentsError(
