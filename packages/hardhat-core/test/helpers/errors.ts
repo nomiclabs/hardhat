@@ -99,7 +99,9 @@ export async function expectHardhatErrorAsync(
   try {
     await f();
   } catch (err) {
-    assert.instanceOf(err, HardhatError);
+    if (!(err instanceof HardhatError)) {
+      assert.fail();
+    }
     assert.equal(err.number, errorDescriptor.number);
     assert.notInclude(
       err.message,

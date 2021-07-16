@@ -37,7 +37,7 @@ export class HardhatDocker {
     // TODO: This doesn't support windows
     const { exec } = await import("child_process");
     return new Promise((resolve) => {
-      exec("which docker", (error?: any) => resolve(!error));
+      exec("which docker", (error?) => resolve(!error));
     });
   }
 
@@ -211,8 +211,8 @@ export class HardhatDocker {
 
       if (
         error.statusCode === 400 &&
-        error.message !== undefined &&
-        error.message.includes("executable file not found")
+        (error.message ?? "") !== "" &&
+        (error.message as string).includes("executable file not found")
       ) {
         throw new ExecutableNotFoundError(error);
       }

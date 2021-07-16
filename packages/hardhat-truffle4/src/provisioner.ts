@@ -233,7 +233,10 @@ export class LazyTruffleContractProvisioner {
 
   private _isLastArgumentTxParams(args: any[]) {
     const lastArg = args[args.length - 1];
-    return lastArg && Object.getPrototypeOf(lastArg) === Object.prototype;
+    return (
+      lastArg !== undefined &&
+      Object.getPrototypeOf(lastArg) === Object.prototype
+    );
   }
 
   private async _addDefaultTxParams(

@@ -24,7 +24,7 @@ import {
   BUILD_INFO_FORMAT_VERSION,
   DEBUG_FILE_FORMAT_VERSION,
 } from "./constants";
-import { HardhatError } from "./core/errors";
+import { assertIsError, HardhatError } from "./core/errors";
 import { ERRORS } from "./core/errors-list";
 import { glob, globSync } from "./util/glob";
 import { createNonCryptographicHashBasedIdentifier } from "./util/hash";
@@ -63,6 +63,7 @@ export class Artifacts implements IArtifacts {
 
       return fsExtra.readJson(trueCaseArtifactPath);
     } catch (error) {
+      assertIsError(error);
       if (
         typeof error.message === "string" &&
         error.message.includes("no matching file exists")
@@ -97,6 +98,7 @@ export class Artifacts implements IArtifacts {
 
       return fsExtra.readJsonSync(trueCaseArtifactPath);
     } catch (error) {
+      assertIsError(error);
       if (
         typeof error.message === "string" &&
         error.message.includes("no matching file exists")
@@ -129,9 +131,8 @@ export class Artifacts implements IArtifacts {
   public async getBuildInfo(
     fullyQualifiedName: string
   ): Promise<BuildInfo | undefined> {
-    const artifactPath = this._getArtifactPathFromFullyQualifiedName(
-      fullyQualifiedName
-    );
+    const artifactPath =
+      this._getArtifactPathFromFullyQualifiedName(fullyQualifiedName);
 
     const debugFilePath = this._getDebugFilePath(artifactPath);
     const buildInfoPath = await this._getBuildInfoFromDebugFile(debugFilePath);
@@ -173,9 +174,8 @@ export class Artifacts implements IArtifacts {
       artifact.contractName
     );
 
-    const artifactPath = this._getArtifactPathFromFullyQualifiedName(
-      fullyQualifiedName
-    );
+    const artifactPath =
+      this._getArtifactPathFromFullyQualifiedName(fullyQualifiedName);
 
     await fsExtra.ensureDir(path.dirname(artifactPath));
 
@@ -368,9 +368,8 @@ export class Artifacts implements IArtifacts {
   private _getArtifactPathFromFullyQualifiedName(
     fullyQualifiedName: string
   ): string {
-    const { sourceName, contractName } = parseFullyQualifiedName(
-      fullyQualifiedName
-    );
+    const { sourceName, contractName } =
+      parseFullyQualifiedName(fullyQualifiedName);
 
     return path.join(this._artifactsPath, sourceName, `${contractName}.json`);
   }
@@ -469,31 +468,22 @@ export function getArtifactFromContractOutput(
   contractName: string,
   contractOutput: any
 ): Artifact {
-  const evmBytecode = contractOutput.evm && contractOutput.evm.bytecode;
-  let bytecode: string =
-    evmBytecode && evmBytecode.object ? evmBytecode.object : "";
+  const evmBytecode = contractOutput?.evm?.bytecode ?? {};
+  let bytecode: string = evmBytecode?.object ?? "";
 
   if (bytecode.slice(0, 2).toLowerCase() !== "0x") {
     bytecode = `0x${bytecode}`;
   }
 
-  const evmDeployedBytecode =
-    contractOutput.evm && contractOutput.evm.deployedBytecode;
-  let deployedBytecode: string =
-    evmDeployedBytecode && evmDeployedBytecode.object
-      ? evmDeployedBytecode.object
-      : "";
+  const evmDeployedBytecode = contractOutput?.evm?.deployedBytecode ?? {};
+  let deployedBytecode: string = evmDeployedBytecode?.object ?? "";
 
   if (deployedBytecode.slice(0, 2).toLowerCase() !== "0x") {
     deployedBytecode = `0x${deployedBytecode}`;
   }
 
-  const linkReferences =
-    evmBytecode && evmBytecode.linkReferences ? evmBytecode.linkReferences : {};
-  const deployedLinkReferences =
-    evmDeployedBytecode && evmDeployedBytecode.linkReferences
-      ? evmDeployedBytecode.linkReferences
-      : {};
+  const linkReferences = evmBytecode?.linkReferences ?? {};
+  const deployedLinkReferences = evmDeployedBytecode?.linkReferences ?? {};
 
   return {
     _format: ARTIFACT_FORMAT_VERSION,

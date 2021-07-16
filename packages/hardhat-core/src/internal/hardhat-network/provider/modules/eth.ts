@@ -17,6 +17,7 @@ import * as t from "io-ts";
 import cloneDeep from "lodash/cloneDeep";
 
 import { BoundExperimentalHardhatNetworkMessageTraceHook } from "../../../../types";
+import { assertIsError } from "../../../core/errors";
 import { RpcAccessList } from "../../../core/jsonrpc/types/access-list";
 import {
   bufferToRpcData,
@@ -413,12 +414,8 @@ export class EthModule {
 
     const callParams = await this._rpcCallRequestToNodeCallParams(callRequest);
 
-    const {
-      estimation,
-      error,
-      trace,
-      consoleLogMessages,
-    } = await this._node.estimateGas(callParams, blockNumberOrPending);
+    const { estimation, error, trace, consoleLogMessages } =
+      await this._node.estimateGas(callParams, blockNumberOrPending);
 
     if (error !== undefined) {
       const code = await this._node.getCodeFromTrace(
@@ -514,10 +511,8 @@ export class EthModule {
     let totalDifficulty: BN | undefined;
 
     if (numberOrPending === "pending") {
-      [
-        block,
-        totalDifficulty,
-      ] = await this._node.getPendingBlockAndTotalDifficulty();
+      [block, totalDifficulty] =
+        await this._node.getPendingBlockAndTotalDifficulty();
     } else {
       block = await this._node.getBlockByNumber(numberOrPending);
       if (block === undefined) {
@@ -959,6 +954,8 @@ export class EthModule {
         common: this._common,
       });
     } catch (error) {
+      assertIsError(error);
+
       // This section of the code is incredibly dependant of TransactionFactory.fromSerializedData
       // AccessListEIP2930Transaction.fromSerializedTx and Transaction.fromSerializedTx
       // Please keep it updated.

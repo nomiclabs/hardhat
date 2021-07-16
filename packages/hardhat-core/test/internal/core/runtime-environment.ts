@@ -8,6 +8,7 @@ import {
   defaultHardhatNetworkParams,
   defaultHttpNetworkParams,
 } from "../../../src/internal/core/config/default-config";
+import { assertIsError } from "../../../src/internal/core/errors";
 import { ERRORS } from "../../../src/internal/core/errors-list";
 import { Environment } from "../../../src/internal/core/runtime-environment";
 import { TasksDSL } from "../../../src/internal/core/tasks/dsl";
@@ -208,10 +209,8 @@ describe("Environment", () => {
         await env.run(taskName, taskMinimalArgs);
 
         // assertions
-        const [
-          taskWithSpecifiedArgsCall,
-          taskWithDefaultArgsCall,
-        ] = taskActionSpy.getCalls();
+        const [taskWithSpecifiedArgsCall, taskWithDefaultArgsCall] =
+          taskActionSpy.getCalls();
 
         assert.equal(
           taskWithSpecifiedArgsCall.args[0][optParamName],
@@ -246,6 +245,8 @@ describe("Environment", () => {
           try {
             await env.run(taskNameToRun, taskArguments);
           } catch (error) {
+            assertIsError(error);
+
             assert.fail(
               error,
               undefined,
