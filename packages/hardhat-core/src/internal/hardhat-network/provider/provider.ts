@@ -52,7 +52,7 @@ const PRIVATE_RPC_METHODS = new Set([
   "hardhat_setLoggingEnabled",
 ]);
 
-// tslint:disable only-hardhat-error
+/* eslint-disable @nomiclabs/only-hardhat-error */
 
 export class HardhatNetworkProvider extends EventEmitter
   implements EIP1193Provider {
